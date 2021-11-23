@@ -9,11 +9,14 @@ def execute_request_to_database(sqlite_request):
     request_is_successful = False
     try:
         sqlite_connection = sqlite3.connect(DATABASE_NAME)
+        # This enables column access by name: row['column_name']
+        sqlite_connection.row_factory = sqlite3.Row
         cursor = sqlite_connection.cursor()
         print("Connected to SQLite")
 
-        cursor.execute(sqlite_request)
 
+        cursor.execute(sqlite_request)
+        request_response = cursor.fetchall()
         sqlite_connection.commit()
         print(f"Request is executed")
 
@@ -27,35 +30,21 @@ def execute_request_to_database(sqlite_request):
         if sqlite_connection:
             sqlite_connection.close()
             print("The SQLite connection is closed")
-        return request_is_successful
+        return request_is_successful, request_response
 
 
-def insert_variable_into_table(sender, receiver, time_transaction, money):
-    variable_is_added = False
-    try:
-        sqlite_connection = sqlite3.connect(DATABASE_NAME)
-        cursor = sqlite_connection.cursor()
-        print("Connected to SQLite")
+def insert_transaction_into_table(sender, receiver, time_transaction, money):
+    sqlite_insert_request = f"INSERT INTO {TABLE_TRANSACTIONS_NAME} (sender, receiver, time_transaction, money) " \
+                            f"VALUES ('{sender}', '{receiver}', '{time_transaction}', {money});"
+    print(sqlite_insert_request)
+    return execute_request_to_database(sqlite_insert_request)
 
-        sqlite_insert_with_param = f"""INSERT INTO {TABLE_TRANSACTIONS_NAME}
-                          (sender, receiver, time_transaction, money) 
-                          VALUES (?, ?, ?, ?);"""
 
-        data_tuple = (sender, receiver, time_transaction, money)
-        cursor.execute(sqlite_insert_with_param, data_tuple)
-        sqlite_connection.commit()
-        print(f"Python Variables inserted successfully into {TABLE_TRANSACTIONS_NAME} table")
+def get_transactions():
+    sqlite_get_request = f'SELECT * FROM {TABLE_TRANSACTIONS_NAME}'
+    return execute_request_to_database(sqlite_get_request)
 
-        cursor.close()
-        variable_is_added = True
 
-    except sqlite3.Error as error:
-        print("Failed to insert Python variable into sqlite table", error)
-        variable_is_added = False
-    finally:
-        if sqlite_connection:
-            sqlite_connection.close()
-            print("The SQLite connection is closed")
-        return variable_is_added
+
 
 
