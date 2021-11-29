@@ -41,8 +41,15 @@ def insert_transaction_into_table(sender, receiver, time_transaction, money):
 
 
 def get_transactions():
-    sqlite_get_request = f'SELECT * FROM {TABLE_TRANSACTIONS_NAME}'
+    sqlite_get_request = f'SELECT * FROM {TABLE_TRANSACTIONS_NAME} ORDER BY time_transaction ASC ;'
     return execute_request_to_database(sqlite_get_request)
+
+
+def get_user_transactions(username):
+    sqlite_get_request = f"SELECT * FROM {TABLE_TRANSACTIONS_NAME} WHERE receiver = '{username}' COLLATE NOCASE " \
+                         f"OR sender = '{username}' COLLATE NOCASE ORDER BY time_transaction ASC;"
+    return execute_request_to_database(sqlite_get_request)
+
 
 
 

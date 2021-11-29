@@ -1,4 +1,4 @@
-#from flask import *
+# from flask import *
 import datetime
 import json
 
@@ -29,7 +29,8 @@ def add():
     time_transaction = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     transaction_is_added, request_response = insert_transaction_into_table(sender=sender, receiver=receiver,
-                                                      time_transaction=time_transaction, money=money)
+                                                                           time_transaction=time_transaction,
+                                                                           money=money)
     if transaction_is_added:
         response_message_dict = {'message': 'Transaction added', 'code': 'SUCCESS'}
         return make_response(jsonify(response_message_dict), 200)
@@ -43,7 +44,15 @@ def add():
 def show_all_transactions():
     """Show transactions in chronological order"""
     request_is_successful, request_response = get_transactions()
-    #return request_response.__str__()
+    # return request_response.__str__()
+    return json.dumps([dict(ix) for ix in request_response])
+
+
+@app.route('/api/transactions/<username>', methods=['GET'])
+def show_user_transactions(username):
+    """Show transactions in chronological order"""
+    request_is_successful, request_response = get_user_transactions(username)
+    # return request_response.__str__()
     return json.dumps([dict(ix) for ix in request_response])
 
 
