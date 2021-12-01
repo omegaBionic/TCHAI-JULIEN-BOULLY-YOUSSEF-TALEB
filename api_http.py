@@ -4,7 +4,7 @@ import json
 
 from flask import Flask, render_template, request, make_response, jsonify
 
-from database_connection import *
+from DatabaseRequests import *
 
 app = Flask(__name__)
 transactions = []
@@ -28,9 +28,10 @@ def add():
     # Get the current time and date as a string
     time_transaction = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    transaction_is_added, request_response = insert_transaction_into_table(sender=sender, receiver=receiver,
-                                                                           time_transaction=time_transaction,
-                                                                           money=money)
+    transaction_is_added, request_response = DatabaseRequests.insert_transaction_into_table(sender=sender,
+                                                                                            receiver=receiver,
+                                                                                            time_transaction=time_transaction,
+                                                                                            money=money)
     if transaction_is_added:
         response_message_dict = {'message': 'Transaction added', 'code': 'SUCCESS'}
         return make_response(jsonify(response_message_dict), 200)
@@ -43,17 +44,30 @@ def add():
 @app.route('/api/transactions', methods=['GET'])
 def show_all_transactions():
     """Show transactions in chronological order"""
-    request_is_successful, request_response = get_transactions()
+    request_is_successful, request_response = DatabaseRequests.get_transactions()
     # return request_response.__str__()
-    return json.dumps([dict(ix) for ix in request_response])
+    if request_is_successful:
+        return make_response(json.dumps([dict(ix) for ix in request_response]), 200)
+    else:
+        return make_response("ERROR", 400)
 
 
 @app.route('/api/transactions/<username>', methods=['GET'])
 def show_user_transactions(username):
     """Show transactions in chronological order"""
-    request_is_successful, request_response = get_user_transactions(username)
+    request_is_successful, request_response = DatabaseRequests.get_user_transactions(username)
     # return request_response.__str__()
-    return json.dumps([dict(ix) for ix in request_response])
+    if request_is_successful:
+        return make_response(json.dumps([dict(ix) for ix in request_response]), 200)
+    else:
+        return make_response("ERROR", 400)
+
+
+@app.route('/api/transactions/<username>/money', methods=['GET'])
+def show_user_money(username):
+    """Show how much money a user has"""
+    _, money = DatabaseRequests.get_money_person(username=username)
+    return make_response(jsonify({'person': username, 'money': money}), 200)
 
 
 app.run(host='0.0.0.0', debug=True)
