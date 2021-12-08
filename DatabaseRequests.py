@@ -1,6 +1,6 @@
 import sqlite3
 
-DATABASE_NAME = 'SQL_TCHAI.sqlite'
+DATABASE_NAME = 'SQL_TCHAI.db'
 TABLE_TRANSACTIONS_NAME = 'tblTransactions'
 
 
