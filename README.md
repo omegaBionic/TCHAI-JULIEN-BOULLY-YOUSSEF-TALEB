@@ -17,8 +17,9 @@
 
 ## Installation
 
+Create database :
 ```bash
-#TODO
+python3 create_database.py
 ```
 
 ## Running the app
