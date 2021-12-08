@@ -66,8 +66,11 @@ def show_user_transactions(username):
 @app.route('/api/transactions/<username>/money', methods=['GET'])
 def show_user_money(username):
     """Show how much money a user has"""
-    _, money = DatabaseRequests.get_money_person(username=username)
-    return make_response(jsonify({'person': username, 'money': money}), 200)
+    request_is_successful, money = DatabaseRequests.get_money_person(username=username)
+    if request_is_successful:
+        return make_response(jsonify({'person': username, 'money': money}), 200)
+    else:
+        return make_response("ERROR", 400)
 
 
 app.run(host='0.0.0.0', debug=True)
