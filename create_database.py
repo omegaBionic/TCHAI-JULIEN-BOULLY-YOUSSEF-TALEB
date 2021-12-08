@@ -3,7 +3,7 @@ import sqlite3
 from pathlib import Path
 from sqlite3 import Error
 
-import DatabaseRequests
+import database_requests
 import utils.config as Config
 
 config = Config.Config()
