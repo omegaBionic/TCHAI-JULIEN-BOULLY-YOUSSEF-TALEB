@@ -12,6 +12,8 @@ transactions = []
 
 @app.route('/')
 def index():
+    # transaction_is_added, request_response = DatabaseRequests.get_transactions()
+    # print(transaction_is_added + "----" + request_response)
     return render_template('index.html')
 
 

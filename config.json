@@ -1,5 +1,6 @@
 {
   "database_config": {
-    "database_name": "SQL_TCHAI.db"
+    "database_name": "SQL_TCHAI.db",
+    "table_name": "tblTransactions"
   }
 }

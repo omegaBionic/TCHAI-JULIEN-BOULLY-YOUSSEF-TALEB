@@ -1,8 +1,11 @@
 import sqlite3
+import utils.config as Config
 
-DATABASE_NAME = 'SQL_TCHAI.db'
-TABLE_TRANSACTIONS_NAME = 'tblTransactions'
+config = Config.Config()
 
+print(config.config_data)
+DATABASE_NAME = config.config_data["database_config"]["database_name"]
+TABLE_TRANSACTIONS_NAME = config.config_data["database_config"]["table_name"]
 
 class DatabaseRequests:
 
