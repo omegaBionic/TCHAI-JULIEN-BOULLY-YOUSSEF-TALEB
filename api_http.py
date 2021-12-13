@@ -4,7 +4,7 @@ import json
 
 from flask import Flask, render_template, request, make_response, jsonify
 
-from DatabaseRequests import *
+from database_requests import *
 
 app = Flask(__name__)
 transactions = []
