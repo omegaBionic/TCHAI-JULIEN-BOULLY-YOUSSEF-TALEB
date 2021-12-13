@@ -12,9 +12,9 @@ transactions = []
 
 @app.route('/')
 def index():
-    # transaction_is_added, request_response = DatabaseRequests.get_transactions()
-    # print(transaction_is_added + "----" + request_response)
-    return render_template('index.html')
+    request_is_successful, request_response = DatabaseRequests.get_transactions()
+    json_datas = json.loads(json.dumps([dict(ix) for ix in request_response]))
+    return render_template('index.html', jsonfile=json_datas)
 
 
 @app.route('/api/transaction', methods=['POST'])

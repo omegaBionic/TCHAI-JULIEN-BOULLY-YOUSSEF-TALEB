@@ -4,3 +4,20 @@ h1 {
     text-align: center;
     padding: 10px;
 }
+
+table {
+ border-width:1px;
+ border-style:solid;
+ border-color:black;
+ width:50%;
+margin:auto;
+    text-align: center;
+ }
+
+td {
+ border-width:1px;
+ border-style:solid;
+ border-color:black;
+ width:50%;
+text-align: center;
+ }

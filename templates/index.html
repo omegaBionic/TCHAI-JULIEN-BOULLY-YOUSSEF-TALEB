@@ -1,12 +1,32 @@
 {% extends 'base.html' %}
-
 {% block content %}
-    <h1>{% block title %} Welcome to FlaskBlog {% endblock %}</h1>
-    {% for post in posts %}
-        <a href="#">
-            <h2>{{ post['title'] }}</h2>
-        </a>
-        <span class="badge badge-primary">{{ post['created'] }}</span>
-        <hr>
-    {% endfor %}
+    <h1>{% block title %} Transactions {% endblock %}</h1>
+
+
+
+            <table>
+                <thead> <!-- En-tête du tableau -->
+                <tr>
+                    <td><b>id</b></td>
+                    <td><b>sender</b></td>
+                    <td><b>receiver</b></td>
+                    <td><b>time_transaction</b></td>
+                    <td><b>money</b></td>
+                </tr>
+                </thead>
+
+                {% for json in jsonfile %}
+                    <tbody> <!-- Corps du tableau -->
+                    <tr>
+                        <td>{{ json["id"] }}</td>
+                        <td>{{ json["sender"] }}</td>
+                        <td>{{ json["receiver"] }}</td>
+                        <td>{{ json["time_transaction"] }}</td>
+                        <td>{{ json["money"] }} €</td>
+                    </tr>
+                    </tbody>
+
+                {% endfor %}
+            </table>
+
 {% endblock %}
