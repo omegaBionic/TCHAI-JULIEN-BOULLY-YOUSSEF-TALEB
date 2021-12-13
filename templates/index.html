@@ -2,18 +2,16 @@
 {% block content %}
     <h1>{% block title %} Transactions {% endblock %}</h1>
 
-
-
-            <table>
-                <thead> <!-- En-tête du tableau -->
-                <tr>
-                    <td><b>id</b></td>
-                    <td><b>sender</b></td>
-                    <td><b>receiver</b></td>
-                    <td><b>time_transaction</b></td>
-                    <td><b>money</b></td>
-                </tr>
-                </thead>
+    <table>
+        <thead> <!-- En-tête du tableau -->
+        <tr>
+            <td><b>id</b></td>
+            <td><b>sender</b></td>
+            <td><b>receiver</b></td>
+            <td><b>time_transaction</b></td>
+            <td><b>money</b></td>
+        </tr>
+        </thead>
 
                 {% for json in jsonfile %}
                     <tbody> <!-- Corps du tableau -->

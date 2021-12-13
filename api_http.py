@@ -16,6 +16,9 @@ def index():
     json_datas = json.loads(json.dumps([dict(ix) for ix in request_response]))
     return render_template('index.html', jsonfile=json_datas)
 
+@app.route('/transaction')
+def transaction():
+    return render_template('transaction.html')
 
 @app.route('/api/transaction', methods=['POST'])
 def add():
