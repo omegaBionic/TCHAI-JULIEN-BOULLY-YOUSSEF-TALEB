@@ -1,23 +1,26 @@
-h1 {
-    border: 2px #eee solid;
-    color: brown;
-    text-align: center;
-    padding: 10px;
+table {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  border: 3px solid darkred;
 }
 
-table {
- border-width:1px;
- border-style:solid;
- border-color:black;
- width:50%;
-margin:auto;
-    text-align: center;
- }
+thead th:nth-child(1) {
+  width: 30%;
+}
 
-td {
- border-width:1px;
- border-style:solid;
- border-color:black;
- width:50%;
-text-align: center;
- }
+thead th:nth-child(2) {
+  width: 20%;
+}
+
+thead th:nth-child(3) {
+  width: 15%;
+}
+
+thead th:nth-child(4) {
+  width: 35%;
+}
+
+th, td {
+  padding: 20px;
+}
