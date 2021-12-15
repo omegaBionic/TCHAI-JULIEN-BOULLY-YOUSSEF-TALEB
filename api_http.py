@@ -9,34 +9,35 @@ from DatabaseRequests import *
 app = Flask(__name__)
 transactions = []
 
-
 @app.route('/')
 def index():
     request_is_successful, request_response = DatabaseRequests.get_transactions()
     json_datas = json.loads(json.dumps([dict(ix) for ix in request_response]))
     return render_template('index.html', jsonfile=json_datas)
 
-@app.route('/transaction')
-def transaction():
-    return render_template('transaction.html')
-
-@app.route('/api/transaction', methods=['POST'])
+@app.route('/add', methods=['GET'])
 def add():
+    return render_template('add.html')
+
+@app.route('/api/add', methods=['POST'])
+def api_add():
     """Add a user to the database"""
     # Get the body of the request as a json object
-    transaction_json = request.json
+    transaction = request.form
 
     # Get the elements of the json object
-    sender = transaction_json.get("sender", None)
-    receiver = transaction_json.get("receiver", None)
-    money = transaction_json.get("money", None)
+    sender = transaction['sender']
+    receiver = transaction['receiver']
+    money = transaction['money']
+    print("[api_add] POST: '{}' - '{}' - '{}'".format(sender, receiver, money))
+
     # Get the current time and date as a string
     time_transaction = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
     transaction_is_added, request_response = DatabaseRequests.insert_transaction_into_table(sender=sender,
                                                                                             receiver=receiver,
                                                                                             time_transaction=time_transaction,
                                                                                             money=money)
+    print("[api_add] POST: '{}' - '{}'".format(transaction_is_added, request_response))
     if transaction_is_added:
         response_message_dict = {'message': 'Transaction added', 'code': 'SUCCESS'}
         return make_response(jsonify(response_message_dict), 200)
