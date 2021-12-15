@@ -1,4 +1,8 @@
 
+body{
+        background-color: lightslategray;
+    }
+
 thead th:nth-child(1) {
   width: 30%;
 }
