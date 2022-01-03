@@ -1,12 +1,56 @@
 {% extends 'base.html' %}
-
 {% block content %}
-    <h1>{% block title %} Welcome to FlaskBlog {% endblock %}</h1>
-    {% for post in posts %}
-        <a href="#">
-            <h2>{{ post['title'] }}</h2>
-        </a>
-        <span class="badge badge-primary">{{ post['created'] }}</span>
-        <hr>
-    {% endfor %}
+    <h1>{% block title %} Transactions list {% endblock %}</h1>
+
+    <!-- Search input for sender -->
+    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for sender.." title="Type in a name">
+
+    <!-- Table -->
+    <table id="myTable" class="table table-striped table-dark">
+        <!-- Table header -->
+        <thead>
+        <tr>
+            <td><b>id</b></td>
+            <td><b>sender</b></td>
+            <td><b>receiver</b></td>
+            <td><b>time_transaction</b></td>
+            <td><b>money</b></td>
+        </tr>
+        </thead>
+        {% for json in jsonfile %}
+            <!-- Body of the table -->
+            <tbody>
+            <tr>
+                <td>{{ json["id"] }}</td>
+                        <td>{{ json["sender"] }}</td>
+                        <td>{{ json["receiver"] }}</td>
+                        <td>{{ json["time_transaction"] }}</td>
+                        <td>{{ json["money"] }} €</td>
+                    </tr>
+                    </tbody>
+
+                {% endfor %}
+    </table>
+
+    <script>
+        function myFunction() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("myInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("myTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[1];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
+
 {% endblock %}
