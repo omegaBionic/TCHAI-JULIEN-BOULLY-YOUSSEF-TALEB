@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>{% block title %} Wallets list {% endblock %}</h1>
+
+    <!-- Search input for wallet name -->
+    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for sender.." title="Type in a name">
+
+    <!-- Table -->
+    <table id="myTable" class="table table-striped table-dark">
+        <!-- Table header -->
+        <thead>
+        <tr>
+            <td><b>Wallet name</b></td>
+            <td><b>Balance</b></td>
+        </tr>
+        </thead>
+        {% for json in jsonfile %}
+            <!-- Body of the table -->
+            <tbody>
+            <tr>
+                <td>{{ json["wallet_name"] }}</td>
+                <td>{{ json["wallet_balance"] }}</td>
+            </tr>
+            </tbody>
+        {% endfor %}
+    </table>
+
+    <script>
+        function myFunction() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("myInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("myTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0];
+                console.log(td)
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
+{% endblock %}

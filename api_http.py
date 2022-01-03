@@ -21,6 +21,33 @@ def add():
     return render_template('add.html')
 
 
+@app.route('/wallet', methods=['GET'])
+def wallet():
+    # Get all transaction for sort after and get wallets
+    request_is_successful, request_response = DatabaseRequests.get_transactions()
+    json_datas = json.loads(json.dumps([dict(ix) for ix in request_response]))
+
+    # Append sender and receiver in wallets list
+    wallet_names = []
+    for json_data in json_datas:
+        wallet_names.append(json_data["sender"]) if json_data["sender"] not in wallet_names else wallet_names
+        wallet_names.append(json_data["receiver"]) if json_data["receiver"] not in wallet_names else wallet_names
+    print("wallet_name_list: '{}'".format(wallet_names))
+
+    # Request database for all this wallets
+    wallets = []
+    for wallet_name in wallet_names:
+        request_is_successful, request_response = DatabaseRequests.get_money_person(username=wallet_name)
+        if request_response:
+            wallets.append({"wallet_name": wallet_name, "wallet_balance": request_response})
+            print("wallet_name: '{}' - wallet_balance: '{}'".format(wallet_name, request_response))
+        else:
+            print(" ---> Wallet NOT added")
+
+    wallets = json.loads(json.dumps([dict(ix) for ix in wallets]))
+    return render_template('wallet.html', jsonfile=wallets)
+
+
 @app.route('/api/add', methods=['POST'])
 def api_add():
     """Add a user to the database"""
