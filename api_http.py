@@ -1,7 +1,6 @@
 # from flask import *
 import datetime
 import json
-
 from flask import Flask, render_template, request, make_response, jsonify
 
 from database_requests import *
@@ -9,15 +8,18 @@ from database_requests import *
 app = Flask(__name__)
 transactions = []
 
+
 @app.route('/')
 def index():
     request_is_successful, request_response = DatabaseRequests.get_transactions()
     json_datas = json.loads(json.dumps([dict(ix) for ix in request_response]))
     return render_template('index.html', jsonfile=json_datas)
 
+
 @app.route('/add', methods=['GET'])
 def add():
     return render_template('add.html')
+
 
 @app.route('/api/add', methods=['POST'])
 def api_add():
@@ -43,7 +45,7 @@ def api_add():
         return make_response(jsonify(response_message_dict), 200)
     else:
         response_message_dict = {'message': 'TRANSACTION CANNOT BE ADDED', 'code': 'ERROR',
-                                 'details': 'Ensure that the body is in a JSON format with the fields: sender, receiver and money.'}
+                                 'details': 'Ensure that the database is created and the body is in a JSON format with the fields: sender, receiver and money.'}
         return make_response((jsonify(response_message_dict), 400))
 
 

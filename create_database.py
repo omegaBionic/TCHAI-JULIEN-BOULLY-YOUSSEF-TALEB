@@ -6,7 +6,7 @@ from database_requests import *
 import utils.config as Config
 
 config = Config.Config()
-database_name = config.config_data["database_config"]["database_name"]
+database_name = config.config_data["datbase_config"]["database_name"]
 table_name = config.config_data["database_config"]["table_name"]
 
 # Create database

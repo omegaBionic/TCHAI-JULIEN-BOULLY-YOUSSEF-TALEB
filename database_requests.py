@@ -1,7 +1,11 @@
 import sqlite3
+import utils.config as Config
 
-DATABASE_NAME = 'SQL_TCHAI.db'
-TABLE_TRANSACTIONS_NAME = 'tblTransactions'
+config = Config.Config()
+
+print(config.config_data)
+DATABASE_NAME = config.config_data["database_config"]["database_name"]
+TABLE_TRANSACTIONS_NAME = config.config_data["database_config"]["table_name"]
 
 
 class DatabaseRequests:
@@ -27,6 +31,7 @@ class DatabaseRequests:
         except sqlite3.Error as error:
             print("Failed to execute the request", error)
             request_is_successful = False
+            request_response = ""
         finally:
             if sqlite_connection:
                 sqlite_connection.close()
@@ -53,7 +58,6 @@ class DatabaseRequests:
         sqlite_get_request = f"SELECT * FROM {TABLE_TRANSACTIONS_NAME} WHERE receiver = '{username}' COLLATE NOCASE " \
                              f"OR sender = '{username}' COLLATE NOCASE ORDER BY time_transaction ASC;"
         return DatabaseRequests.execute_request_to_database(sqlite_get_request)
-
 
     @staticmethod
     def get_money_person(username):
@@ -86,4 +90,3 @@ class DatabaseRequests:
                 print("The SQLite connection is closed")
 
         return request_is_successful, received_sum - sent_sum
-
