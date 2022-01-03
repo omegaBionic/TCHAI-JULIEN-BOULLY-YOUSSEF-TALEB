@@ -62,6 +62,7 @@ class DatabaseRequests:
     @staticmethod
     def get_money_person(username):
         username = username.lower()
+        print(f"Get money for: '{username}'")
         sqlite_get_request_received_sum = f"SELECT SUM(money) FROM {TABLE_TRANSACTIONS_NAME} WHERE receiver = " \
                                           f"'{username}' COLLATE NOCASE;"
         sqlite_get_request_sent_sum = f"SELECT SUM(money) FROM {TABLE_TRANSACTIONS_NAME} WHERE sender = " \
@@ -88,5 +89,11 @@ class DatabaseRequests:
             if sqlite_connection:
                 sqlite_connection.close()
                 print("The SQLite connection is closed")
+
+        # If None = 0
+        if received_sum is None:
+            received_sum = 0
+        if sent_sum is None:
+            sent_sum = 0
 
         return request_is_successful, received_sum - sent_sum
