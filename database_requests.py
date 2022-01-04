@@ -48,7 +48,7 @@ class DatabaseRequests:
 
         # hash
         transaction_hash = hashlib.sha512(f"{sender}{receiver}{time_transaction}{money}".encode())
-        transaction_hash = transaction_hash.digest()
+        transaction_hash = transaction_hash.digest().hex()
         print("transaction_hash: '{}'".format(transaction_hash))
 
         # Concatenate sql request

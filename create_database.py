@@ -15,7 +15,7 @@ try:
     c = conn.cursor()
     c.execute('''
     CREATE TABLE ''' + table_name + '''( id INTEGER PRIMARY KEY AUTOINCREMENT, sender VARCHAR(30) NOT NULL, receiver 
-    VARCHAR(30) NOT NULL, time_transaction VARCHAR(20) NOT NULL, money REAL NOT NULL, hash BLOB);''')
+    VARCHAR(30) NOT NULL, time_transaction VARCHAR(20) NOT NULL, money REAL NOT NULL, hash VARCHAR(64) NOT NULL);''')
 
     conn.commit()
 except Error as e:
