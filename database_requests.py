@@ -1,4 +1,6 @@
+import hashlib
 import sqlite3
+
 import utils.config as Config
 
 config = Config.Config()
@@ -40,10 +42,18 @@ class DatabaseRequests:
 
     @staticmethod
     def insert_transaction_into_table(sender, receiver, time_transaction, money):
+        # Uniformize sender and receiver
         sender = sender.lower()
         receiver = receiver.lower()
-        sqlite_insert_request = f"INSERT INTO {TABLE_TRANSACTIONS_NAME} (sender, receiver, time_transaction, money) " \
-                                f"VALUES ('{sender}', '{receiver}', '{time_transaction}', {money});"
+
+        # hash
+        transaction_hash = hashlib.sha512(f"{sender}{receiver}{time_transaction}{money}".encode())
+        transaction_hash = transaction_hash.digest()
+        print("transaction_hash: '{}'".format(transaction_hash))
+
+        # Concatenate sql request
+        sqlite_insert_request = f"INSERT INTO {TABLE_TRANSACTIONS_NAME} (sender, receiver, time_transaction, money, hash) " \
+                                f"VALUES ('{sender}', '{receiver}', '{time_transaction}', {money}, \"{transaction_hash}\");"
         print(sqlite_insert_request)
         return DatabaseRequests.execute_request_to_database(sqlite_insert_request)
 
