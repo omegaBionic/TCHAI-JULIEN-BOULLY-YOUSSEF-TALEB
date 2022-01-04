@@ -42,7 +42,7 @@ class DatabaseRequests:
 
     @staticmethod
     def insert_transaction_into_table(sender, receiver, time_transaction, money):
-        # Uniformize sender and receiver
+        # Uniformize datas
         sender = sender.lower()
         receiver = receiver.lower()
 

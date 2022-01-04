@@ -13,6 +13,13 @@ transactions = []
 def index():
     request_is_successful, request_response = DatabaseRequests.get_transactions()
     json_datas = json.loads(json.dumps([dict(ix) for ix in request_response]))
+
+    # Truncate money
+    for i, transaction in enumerate(json_datas):
+        json_datas[i]["money"] = format(transaction["money"], ".6f")
+
+    print(json_datas)
+
     return render_template('index.html', jsonfile=json_datas)
 
 
