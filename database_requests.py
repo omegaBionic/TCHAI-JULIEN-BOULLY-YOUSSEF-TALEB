@@ -45,9 +45,9 @@ class DatabaseRequests:
         # Uniformize datas
         sender = sender.lower()
         receiver = receiver.lower()
+        money = format(float(money), ".6f")
 
         # hash
-        salt = "youssandboule"
         transaction_hash = HashTchai.calculate_hash(sender, receiver, time_transaction, money)
 
         # Concatenate sql request

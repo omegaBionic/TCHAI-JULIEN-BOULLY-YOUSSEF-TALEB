@@ -135,19 +135,34 @@ def integrity():
     }
 
     # Check transactions
+    false_transactions = []
     for transaction in transactions:
         calcutated_transaction_hash = HashTchai.calculate_hash(transaction["sender"], transaction["receiver"],
                                                                transaction["time_transaction"], transaction["money"])
         old_transaction_hash = transaction["hash"]
 
         # Check if hash is calculated hash
-        false_transactions = []
         if calcutated_transaction_hash != old_transaction_hash:
             false_transactions.append(transaction)
             # Adding to JSON response
             dict_false_transactions_with_the_corresponding_correct_hash["false_transations"].append({
                 "transaction": transaction,
             })
+
+        # Debug
+        print(f"\n-------\nINTEGRITY -  id: {transaction['id']}")
+        print(f"old hash : {old_transaction_hash}")
+        print(f"new hash : {calcutated_transaction_hash }")
+        if calcutated_transaction_hash != old_transaction_hash:
+            print("Is NOT the same")
+        else:
+            print("Is the same")
+        print(len(false_transactions))
+        print("transaction[\"sender\"]: '{}'".format(transaction["sender"]))
+        print("transaction[\"receiver\"]: '{}'".format(transaction["receiver"]))
+        print("transaction[\"time_transaction\"]: '{}'".format(transaction["time_transaction"]))
+        print("transaction[\"money\"]: '{}'".format(transaction["money"]))
+        print("-------")
 
     # Return request
     if len(false_transactions) == 0:
