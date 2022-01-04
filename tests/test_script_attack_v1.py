@@ -3,6 +3,8 @@ import random
 import database_requests
 
 if __name__ == "__main__":
+    print("---ATTACK VERSION 1---")
+
     column_name_money = "money"
     # Generate random float between 100 and 0
     new_money_value = round(random.random()*100, 2)
@@ -15,4 +17,5 @@ if __name__ == "__main__":
                             f"WHERE  id= {id_transaction_to_modify}; "
     print(f"sqlite_request_attack: {sqlite_request_attack}")
     database_requests.DatabaseRequests.execute_request_to_database(sqlite_request_attack)
-    
+
+    print("---ATTACK VERSION 1 EXECUTED---")
