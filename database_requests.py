@@ -1,7 +1,7 @@
-import hashlib
 import sqlite3
 
 import utils.config as Config
+from utils.hash_tchai import HashTchai
 
 config = Config.Config()
 
@@ -47,9 +47,8 @@ class DatabaseRequests:
         receiver = receiver.lower()
 
         # hash
-        transaction_hash = hashlib.sha512(f"{sender}{receiver}{time_transaction}{money}".encode())
-        transaction_hash = transaction_hash.digest().hex()
-        print("transaction_hash: '{}'".format(transaction_hash))
+        salt = "youssandboule"
+        transaction_hash = HashTchai.calculate_hash(sender, receiver, time_transaction, money)
 
         # Concatenate sql request
         sqlite_insert_request = f"INSERT INTO {TABLE_TRANSACTIONS_NAME} (sender, receiver, time_transaction, money, hash) " \

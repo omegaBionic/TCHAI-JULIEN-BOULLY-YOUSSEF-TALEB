@@ -1,6 +1,7 @@
 # from flask import *
 import datetime
 import json
+
 from flask import Flask, render_template, request, make_response, jsonify
 
 from database_requests import *
@@ -113,6 +114,46 @@ def show_user_money(username):
         return make_response(jsonify({'person': username, 'money': money}), 200)
     else:
         return make_response("ERROR", 400)
+
+
+@app.route('/api/integrity', methods=['GET'])
+def integrity():
+    # Get all transactions
+    request_is_successful, request_response = DatabaseRequests.get_transactions()
+
+    if not request_is_successful:
+        return make_response(jsonify({'ERROR': "CANNOT SEND REQUEST TO DATABASE"}), 400)
+
+    transactions = json.loads(json.dumps([dict(ix) for ix in request_response]))
+
+    # Check hash integrity
+    dict_false_transactions_with_the_corresponding_correct_hash = {
+        "integrity": "NO",
+        "false_transations": [
+
+        ]
+    }
+
+    # Check transactions
+    for transaction in transactions:
+        calcutated_transaction_hash = HashTchai.calculate_hash(transaction["sender"], transaction["receiver"],
+                                                               transaction["time_transaction"], transaction["money"])
+        old_transaction_hash = transaction["hash"]
+
+        # Check if hash is calculated hash
+        false_transactions = []
+        if calcutated_transaction_hash != old_transaction_hash:
+            false_transactions.append(transaction)
+            # Adding to JSON response
+            dict_false_transactions_with_the_corresponding_correct_hash["false_transations"].append({
+                "transaction": transaction,
+            })
+
+    # Return request
+    if len(false_transactions) == 0:
+        return make_response(jsonify({'integrity': "OK"}), 200)
+    else:
+        return make_response(jsonify(dict_false_transactions_with_the_corresponding_correct_hash), 200)
 
 
 app.run(host='0.0.0.0', debug=True)
