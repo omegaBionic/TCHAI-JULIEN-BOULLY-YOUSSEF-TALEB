@@ -1,3 +1,4 @@
+import json
 import sqlite3
 
 import utils.config as Config
@@ -48,7 +49,15 @@ class DatabaseRequests:
         money = format(float(money), ".6f")
 
         # hash
-        transaction_hash = HashTchai.calculate_hash(sender, receiver, time_transaction, money)
+        # Get all transactions
+        request_is_successful, request_response = DatabaseRequests.get_transactions()
+        transactions = json.loads(json.dumps([dict(ix) for ix in request_response]))
+        request_is_successful_count, table_size = DatabaseRequests.size_of_table()
+        if int(table_size) == 0:
+            transaction_hash = HashTchai.calculate_hash(sender, receiver, time_transaction, money, "", True)
+        else:
+            transaction_hash = HashTchai.calculate_hash(sender, receiver, time_transaction, money,
+                                                        transactions[-1]["hash"], False)
 
         # Concatenate sql request
         sqlite_insert_request = f"INSERT INTO {TABLE_TRANSACTIONS_NAME} (sender, receiver, time_transaction, money, hash) " \
@@ -106,3 +115,39 @@ class DatabaseRequests:
             sent_sum = 0
 
         return request_is_successful, received_sum - sent_sum
+
+    # TODO: Remove get_last_transaction()
+    # @staticmethod
+    # def get_last_transaction():
+    #     last_transaction = ""
+    #
+    #     # Get last element
+    #     # Check if table is empty
+    #     sqlite_insert_request = f"SELECT count(*) FROM {TABLE_TRANSACTIONS_NAME};"
+    #     request_is_successful_count, number_of_lines = DatabaseRequests.execute_request_to_database(
+    #         sqlite_insert_request)
+    #     if str(number_of_lines) == 0:
+    #         is_first_transaction = True
+    #     else:
+    #         # Get last element if table is not empty
+    #         is_first_transaction = False
+    #         sqlite_insert_request = f"SELECT * FROM {TABLE_TRANSACTIONS_NAME} ORDER by time_transaction DESC LIMIT 1;"
+    #         request_is_successful, request_response = DatabaseRequests.execute_request_to_database(
+    #             sqlite_insert_request)
+    #         last_transaction = json.loads(json.dumps([dict(ix) for ix in request_response]))
+    #
+    #     print("************************")
+    #     print("request_is_successful: '{}'".format(request_is_successful))
+    #     print("last_transaction: '{}'".format(last_transaction))
+    #     print("************************")
+    #
+    #     return is_first_transaction, last_transaction
+
+    @staticmethod
+    def size_of_table():
+        sqlite_insert_request = f"SELECT count(*) FROM tblTransactions;"
+        request_is_successful_count, number_of_lines = DatabaseRequests.execute_request_to_database(
+            sqlite_insert_request)
+        number_of_lines = json.loads(json.dumps([dict(ix) for ix in number_of_lines]))[0]["count(*)"]
+        print("number_of_lines: '{}'".format(number_of_lines))
+        return request_is_successful_count, number_of_lines

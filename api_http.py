@@ -1,6 +1,5 @@
 # from flask import *
 import datetime
-import json
 
 from flask import Flask, render_template, request, make_response, jsonify
 
@@ -118,6 +117,9 @@ def show_user_money(username):
 
 @app.route('/api/integrity', methods=['GET'])
 def integrity():
+    # Vars global
+    salt_first_iteration = "boule0and0youss666"
+
     # Get all transactions
     request_is_successful, request_response = DatabaseRequests.get_transactions()
 
@@ -127,48 +129,31 @@ def integrity():
     transactions = json.loads(json.dumps([dict(ix) for ix in request_response]))
 
     # Check hash integrity
-    dict_false_transactions_with_the_corresponding_correct_hash = {
-        "integrity": "NO",
-        "false_transations": [
-
-        ]
-    }
-
-    # Check transactions
     false_transactions = []
-    for transaction in transactions:
-        calcutated_transaction_hash = HashTchai.calculate_hash(transaction["sender"], transaction["receiver"],
-                                                               transaction["time_transaction"], transaction["money"])
-        old_transaction_hash = transaction["hash"]
-
-        # Check if hash is calculated hash
-        if calcutated_transaction_hash != old_transaction_hash:
-            false_transactions.append(transaction)
-            # Adding to JSON response
-            dict_false_transactions_with_the_corresponding_correct_hash["false_transations"].append({
-                "transaction": transaction,
-            })
-
-        # Debug
-        print(f"\n-------\nINTEGRITY -  id: {transaction['id']}")
-        print(f"old hash : {old_transaction_hash}")
-        print(f"new hash : {calcutated_transaction_hash }")
-        if calcutated_transaction_hash != old_transaction_hash:
-            print("Is NOT the same")
+    for i, transaction in enumerate(transactions):
+        if int(transaction["id"]) == 1:
+            calculate_hash = HashTchai.calculate_hash(sender=transaction["sender"], receiver=transaction["receiver"],
+                                                      time_transaction=transaction["time_transaction"],
+                                                      money=transaction["money"],
+                                                      last_hash=salt_first_iteration, is_first_iteration=True)
         else:
-            print("Is the same")
-        print(len(false_transactions))
-        print("transaction[\"sender\"]: '{}'".format(transaction["sender"]))
-        print("transaction[\"receiver\"]: '{}'".format(transaction["receiver"]))
-        print("transaction[\"time_transaction\"]: '{}'".format(transaction["time_transaction"]))
-        print("transaction[\"money\"]: '{}'".format(transaction["money"]))
-        print("-------")
+            calculate_hash = HashTchai.calculate_hash(sender=transaction["sender"], receiver=transaction["receiver"],
+                                                      time_transaction=transaction["time_transaction"],
+                                                      money=transaction["money"],
+                                                      last_hash=transactions[i - 1]["hash"], is_first_iteration=False)
+
+        # Check hash
+        if calculate_hash == transaction["hash"]:
+            print("Transaction OK")
+        else:
+            print("Transaction FAIL")
+            false_transactions.append([transaction, ["calculate_hash", calculate_hash]])
 
     # Return request
     if len(false_transactions) == 0:
         return make_response(jsonify({'integrity': "OK"}), 200)
     else:
-        return make_response(jsonify(dict_false_transactions_with_the_corresponding_correct_hash), 200)
+        return make_response(jsonify([false_transactions]), 200)
 
 
 app.run(host='0.0.0.0', debug=True)
