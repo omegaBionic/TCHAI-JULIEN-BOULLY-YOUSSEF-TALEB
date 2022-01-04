@@ -38,7 +38,7 @@ def wallet():
     wallets = []
     for wallet_name in wallet_names:
         request_is_successful, request_response = DatabaseRequests.get_money_person(username=wallet_name)
-        if request_response:
+        if request_is_successful:
             wallets.append({"wallet_name": wallet_name, "wallet_balance": request_response})
             print("wallet_name: '{}' - wallet_balance: '{}'".format(wallet_name, request_response))
         else:
