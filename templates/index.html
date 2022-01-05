@@ -16,6 +16,7 @@
             <td><b>time_transaction</b></td>
             <td><b>money</b></td>
             <td><b>hash</b></td>
+            <td><b>signature</b></td>
         </tr>
         </thead>
         {% for json in jsonfile %}
@@ -28,6 +29,7 @@
                 <td>{{ json["time_transaction"] }}</td>
                 <td>{{ json["money"] }} €</td>
                 <td>{{ json["hash"] }}</td>
+                <td>{{ json["signature"] }}</td>
             </tr>
             </tbody>
 
