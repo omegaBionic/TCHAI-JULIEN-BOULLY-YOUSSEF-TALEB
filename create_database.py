@@ -15,10 +15,10 @@ table_users_public_key_name = config.config_data["database_config"]["table_users
 try:
     conn = sqlite3.connect(database_name)
     c = conn.cursor()
-    c.execute('''
-    CREATE TABLE ''' + table_name + '''( id INTEGER PRIMARY KEY AUTOINCREMENT, sender VARCHAR(30) NOT NULL, receiver 
-    VARCHAR(30) NOT NULL, time_transaction VARCHAR(20) NOT NULL, money REAL NOT NULL, hash VARCHAR(64) NOT NULL, 
-    signature VARCHAR(64) NOT NULL);''')
+
+    c.execute(f'CREATE TABLE {table_name} ( id INTEGER PRIMARY KEY AUTOINCREMENT, sender VARCHAR(30) NOT NULL, '
+              f'receiver VARCHAR(30) NOT NULL, time_transaction VARCHAR(20) NOT NULL, money REAL NOT NULL, '
+              f'hash VARCHAR(64) NOT NULL, signature VARCHAR(256) NOT NULL);')
     conn.commit()
 
     c.execute(f'CREATE TABLE {table_users_public_key_name} (id_user INTEGER PRIMARY KEY AUTOINCREMENT, '
@@ -31,18 +31,18 @@ finally:
         conn.close()
     print("BDD created.")
 
-# Insert data into database
-try:
-    absolute_path = Path(database_name).resolve()
-except FileNotFoundError:
-    print("BDD FileNotFoundError exception.")
-else:
-    DatabaseRequests.insert_transaction_into_table("boule", "yous",
-                                                   datetime.datetime.now().strftime(
-                                                       "2021-12-08 01:20:10"),
-                                                   100.00)
-    DatabaseRequests.insert_transaction_into_table("yous", "boule",
-                                                   datetime.datetime.now().strftime(
-                                                       "2021-12-08 02:23:22"),
-                                                   100.00)
-    print("Data's added into database.")
+# # Insert data into database
+# try:
+#     absolute_path = Path(database_name).resolve()
+# except FileNotFoundError:
+#     print("BDD FileNotFoundError exception.")
+# else:
+#     DatabaseRequests.insert_transaction_into_table("boule", "yous",
+#                                                    datetime.datetime.now().strftime(
+#                                                        "2021-12-08 01:20:10"),
+#                                                    100.00)
+#     DatabaseRequests.insert_transaction_into_table("yous", "boule",
+#                                                    datetime.datetime.now().strftime(
+#                                                        "2021-12-08 02:23:22"),
+#                                                    100.00)
+#     print("Data's added into database.")
