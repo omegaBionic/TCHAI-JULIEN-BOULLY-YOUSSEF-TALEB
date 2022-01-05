@@ -60,3 +60,19 @@ class HashTchai:
 
         return signature.hex()
 
+    @staticmethod
+    def verify_signature_with_public_key(sender, receiver, money, time_transaction, signature, public_key):
+        message_string = f'{sender}{receiver}{money}{time_transaction}'
+        message_bytes = bytes(message_string, 'UTF-8')
+
+        key = RSA.import_key(public_key)
+        h = SHA256.new(message_bytes)
+        try:
+            pkcs1_15.new(key).verify(h, signature)
+            print("The signature is valid.")
+            return True
+        except (ValueError, TypeError):
+            print("The signature is not valid.")
+            return False
+
+

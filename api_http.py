@@ -195,4 +195,13 @@ def integrity():
         return make_response(jsonify([false_transactions]), 200)
 
 
+@app.route('/api/verify_signatures', methods=['GET'])
+def verify_signature():
+    request_is_successful, request_response = DatabaseRequests.get_transactions()
+
+    for transaction in request_response:
+        signature = transaction["signature"]
+        HashTchai.verify_signature_with_public_key(signature)
+    return 0
+
 app.run(host='0.0.0.0', debug=True)
