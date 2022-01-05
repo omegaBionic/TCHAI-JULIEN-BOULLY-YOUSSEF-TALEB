@@ -57,7 +57,7 @@ def wallet():
 
 @app.route('/api/add', methods=['POST'])
 def api_add():
-    """Add a user to the database"""
+    """Add a transaction to the database"""
     # Get the body of the request as a json object
     transaction = request.form
 
@@ -65,14 +65,36 @@ def api_add():
     sender = transaction['sender']
     receiver = transaction['receiver']
     money = transaction['money']
-    print("[api_add] POST: '{}' - '{}' - '{}'".format(sender, receiver, money))
+
+    # Get the private key from JSON in string format, for example:
+    # "private_key": "0xA12D5...."
+
+    private_key = 0x0
+    if "private_key" in transaction:
+        print("private_key exists in JSON")
+        hex_string = transaction["private_key"]
+        an_integer = int(hex_string, 16)
+        private_key = hex(an_integer)
+    else:
+        print("private key does not exist in JSON")
+
+    print("[api_add] POST: '{}' - '{}' - '{}' - '{}".format(sender, receiver, money, private_key))
+
+    # Add the user to the table containing the users with their public keys
+    request_is_successful, request_response, public_key_created, private_key_created = \
+        DatabaseRequests.insert_user_to_table_public_key(sender)
+
+    if private_key_created != 0x0:
+        private_key = private_key_created
 
     # Get the current time and date as a string
     time_transaction = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    signature = HashTchai.calculate_signature(sender, receiver, money, time_transaction, private_key)
     transaction_is_added, request_response = DatabaseRequests.insert_transaction_into_table(sender=sender,
                                                                                             receiver=receiver,
                                                                                             time_transaction=time_transaction,
-                                                                                            money=money)
+                                                                                            money=money,
+                                                                                            signature=signature)
     print("[api_add] POST: '{}' - '{}'".format(transaction_is_added, request_response))
     if transaction_is_added:
         response_message_dict = {'message': 'Transaction added', 'code': 'SUCCESS'}

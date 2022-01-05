@@ -43,7 +43,7 @@ class DatabaseRequests:
             return request_is_successful, request_response
 
     @staticmethod
-    def insert_transaction_into_table(sender, receiver, time_transaction, money):
+    def insert_transaction_into_table(sender, receiver, time_transaction, money, signature):
         # Uniformize datas
         sender = sender.lower()
         receiver = receiver.lower()
@@ -61,8 +61,8 @@ class DatabaseRequests:
                                                         transactions[-1]["hash"], False)
 
         # Concatenate sql request
-        sqlite_insert_request = f"INSERT INTO {TABLE_TRANSACTIONS_NAME} (sender, receiver, time_transaction, money, hash) " \
-                                f"VALUES ('{sender}', '{receiver}', '{time_transaction}', {money}, \"{transaction_hash}\");"
+        sqlite_insert_request = f"INSERT INTO {TABLE_TRANSACTIONS_NAME} (sender, receiver, time_transaction, money, hash, signature) " \
+                                f"VALUES ('{sender}', '{receiver}', '{time_transaction}', {money}, '{transaction_hash}', '{signature}');"
         print(sqlite_insert_request)
         return DatabaseRequests.execute_request_to_database(sqlite_insert_request)
 

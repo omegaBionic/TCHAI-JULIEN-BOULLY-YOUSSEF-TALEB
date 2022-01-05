@@ -1,6 +1,11 @@
 import hashlib
 import database_requests
 from Crypto.PublicKey import RSA
+from Crypto.Signature import pkcs1_15
+from Crypto.Hash import SHA256
+from Crypto.PublicKey import RSA
+from cryptography.hazmat.primitives.serialization import *
+
 
 class HashTchai:
     @staticmethod
@@ -38,3 +43,17 @@ class HashTchai:
         public_key = key.export_key()
         private_key = key.publickey().export_key()
         return public_key, private_key
+
+    @staticmethod
+    def calculate_signature(sender, receiver, money, time_transaction, private_key):
+        message = f'{sender} {receiver} {money} {time_transaction}'
+
+        # TODO use the private key which is not stored in a pem or der file
+        key = RSA.import_key(open('private_key.der').read())
+
+        h = SHA256.new(message)
+        signature = pkcs1_15.new(key).sign(h)
+
+        return signature.hex()
+
+
