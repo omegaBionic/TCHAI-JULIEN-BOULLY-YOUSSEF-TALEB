@@ -1,10 +1,12 @@
+import base64
+import codecs
 import hashlib
-import database_requests
 from Crypto.PublicKey import RSA
 from Crypto.Signature import pkcs1_15
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
 from cryptography.hazmat.primitives.serialization import *
+
 
 
 class HashTchai:
@@ -40,20 +42,21 @@ class HashTchai:
     @staticmethod
     def generate_rsa():
         key = RSA.generate(2048)
-        public_key = key.export_key()
-        private_key = key.publickey().export_key()
+        private_key = key.export_key('PEM')
+        public_key = key.publickey().export_key('PEM')
+        print(private_key)
+        print(public_key)
         return public_key, private_key
 
     @staticmethod
     def calculate_signature(sender, receiver, money, time_transaction, private_key):
-        message = f'{sender} {receiver} {money} {time_transaction}'
+        message_string = f'{sender}{receiver}{money}{time_transaction}'
+        message_bytes = bytes(message_string, 'UTF-8')
 
-        # TODO use the private key which is not stored in a pem or der file
-        key = RSA.import_key(open('private_key.der').read())
+        key = RSA.import_key(private_key)
 
-        h = SHA256.new(message)
+        h = SHA256.new(message_bytes)
         signature = pkcs1_15.new(key).sign(h)
 
         return signature.hex()
-
 

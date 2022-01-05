@@ -68,7 +68,6 @@ def api_add():
 
     # Get the private key from JSON in string format, for example:
     # "private_key": "0xA12D5...."
-
     private_key = 0x0
     if "private_key" in transaction:
         print("private_key exists in JSON")
@@ -81,8 +80,7 @@ def api_add():
     print("[api_add] POST: '{}' - '{}' - '{}' - '{}".format(sender, receiver, money, private_key))
 
     # Add the user to the table containing the users with their public keys
-    request_is_successful, request_response, public_key_created, private_key_created = \
-        DatabaseRequests.insert_user_to_table_public_key(sender)
+    request_is_successful, request_response, public_key_created, private_key_created = DatabaseRequests.insert_user_to_table_public_key(sender)
 
     if private_key_created != 0x0:
         private_key = private_key_created

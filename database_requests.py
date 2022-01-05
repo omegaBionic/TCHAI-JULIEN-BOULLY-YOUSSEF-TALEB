@@ -62,7 +62,7 @@ class DatabaseRequests:
 
         # Concatenate sql request
         sqlite_insert_request = f"INSERT INTO {TABLE_TRANSACTIONS_NAME} (sender, receiver, time_transaction, money, hash, signature) " \
-                                f"VALUES ('{sender}', '{receiver}', '{time_transaction}', {money}, '{transaction_hash}', '{signature}');"
+                                f"VALUES ('{sender}', '{receiver}', '{time_transaction}', {money}, '{transaction_hash}','{signature}');"
         print(sqlite_insert_request)
         return DatabaseRequests.execute_request_to_database(sqlite_insert_request)
 
@@ -89,12 +89,13 @@ class DatabaseRequests:
         # If the use doesn't exist
         else:
             public_key_bytes, private_key_bytes = HashTchai.generate_rsa()
-            public_key = public_key_bytes.hex()
-            private_key = private_key_bytes.hex()
+            public_key = public_key_bytes
+            private_key = private_key_bytes
             sqlite_insert_request = f"INSERT INTO {TABLE_USERS_PUBLIC_KEY_NAME} (user, public_key) " \
                                     f"VALUES ('{user}', '{public_key}'); "
-
-            return DatabaseRequests.execute_request_to_database(sqlite_insert_request), public_key, private_key
+            request_is_successful, request_response = DatabaseRequests.execute_request_to_database(sqlite_insert_request)
+            user_is_added = True
+            return request_is_successful, user_is_added, public_key, private_key
 
     @staticmethod
     def get_user_transactions(username):
@@ -141,33 +142,6 @@ class DatabaseRequests:
             sent_sum = 0
 
         return request_is_successful, received_sum - sent_sum
-
-    # TODO: Remove get_last_transaction()
-    # @staticmethod
-    # def get_last_transaction():
-    #     last_transaction = ""
-    #
-    #     # Get last element
-    #     # Check if table is empty
-    #     sqlite_insert_request = f"SELECT count(*) FROM {TABLE_TRANSACTIONS_NAME};"
-    #     request_is_successful_count, number_of_lines = DatabaseRequests.execute_request_to_database(
-    #         sqlite_insert_request)
-    #     if str(number_of_lines) == 0:
-    #         is_first_transaction = True
-    #     else:
-    #         # Get last element if table is not empty
-    #         is_first_transaction = False
-    #         sqlite_insert_request = f"SELECT * FROM {TABLE_TRANSACTIONS_NAME} ORDER by time_transaction DESC LIMIT 1;"
-    #         request_is_successful, request_response = DatabaseRequests.execute_request_to_database(
-    #             sqlite_insert_request)
-    #         last_transaction = json.loads(json.dumps([dict(ix) for ix in request_response]))
-    #
-    #     print("************************")
-    #     print("request_is_successful: '{}'".format(request_is_successful))
-    #     print("last_transaction: '{}'".format(last_transaction))
-    #     print("************************")
-    #
-    #     return is_first_transaction, last_transaction
 
     @staticmethod
     def size_of_table():
