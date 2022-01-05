@@ -1,6 +1,7 @@
 
 body{
         background-color: lightslategray;
+        background-image: url("/static/images/background_3.gif");
     }
 
 thead th:nth-child(1) {
