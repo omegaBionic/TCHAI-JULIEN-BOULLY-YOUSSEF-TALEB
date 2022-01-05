@@ -66,6 +66,7 @@ def api_add():
     sender = transaction['sender']
     receiver = transaction['receiver']
     money = transaction['money']
+    print(f'money POST: {money}')
 
     # Get the private key from JSON in string format, for example:
     # "private_key": "0xA12D5...."
@@ -196,12 +197,24 @@ def integrity():
 
 
 @app.route('/api/verify_signatures', methods=['GET'])
-def verify_signature():
+def verify_signatures():
     request_is_successful, request_response = DatabaseRequests.get_transactions()
 
+    #transactions_corrupted = []
     for transaction in request_response:
+        sender = transaction['sender']
+        receiver = transaction['receiver']
+        money = transaction['money']
+        print(f'money VERIFY: {money}')
+        time_transaction = transaction['time_transaction']
         signature = transaction["signature"]
-        HashTchai.verify_signature_with_public_key(signature)
-    return 0
+
+        public_key_string = ""
+        request_is_successful, public_key_string = DatabaseRequests.get_public_key(sender)
+        public_key_bytes = bytes(public_key_string, 'UTF-8')
+        print(public_key_bytes)
+        HashTchai.verify_signature_with_public_key(sender, receiver, money, time_transaction, signature, public_key_bytes)
+    return make_response("yes")
+
 
 app.run(host='0.0.0.0', debug=True)

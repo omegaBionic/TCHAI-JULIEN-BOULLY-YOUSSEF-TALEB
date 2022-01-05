@@ -176,3 +176,32 @@ class DatabaseRequests:
         number_of_lines = json.loads(json.dumps([dict(ix) for ix in number_of_lines]))[0]["count(*)"]
         print("number_of_lines: '{}'".format(number_of_lines))
         return request_is_successful_count, number_of_lines
+
+    @staticmethod
+    def get_public_key(user):
+        sqlite_get_public_key_request = f"SELECT public_key FROM {TABLE_USERS_PUBLIC_KEY_NAME} " \
+                                        f"WHERE user = '{user}' COLLATE NOCASE;"
+        request_is_successful = False
+        user_public_key = ""
+        try:
+            sqlite_connection = sqlite3.connect(DATABASE_NAME)
+            # This enables column access by name: row['column_name']
+            sqlite_connection.row_factory = sqlite3.Row
+            cursor = sqlite_connection.cursor()
+            print("Connected to SQLite")
+
+            cursor.execute(sqlite_get_public_key_request)
+            user_public_key = cursor.fetchone()[0]
+            print(f'public_key : {user_public_key}')
+
+            request_is_successful = True
+        except sqlite3.Error as error:
+            print("Failed to execute the request", error)
+            request_is_successful = False
+        finally:
+            if sqlite_connection:
+                sqlite_connection.close()
+                print("The SQLite connection is closed")
+
+        print(f'user_public_key: {user_public_key}')
+        return request_is_successful, user_public_key
