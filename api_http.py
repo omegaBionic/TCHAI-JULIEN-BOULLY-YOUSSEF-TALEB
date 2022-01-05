@@ -1,6 +1,5 @@
 # from flask import *
 import datetime
-import json
 
 from flask import Flask, render_template, request, make_response, jsonify
 
@@ -129,7 +128,7 @@ def show_all_transactions():
     request_is_successful, request_response = DatabaseRequests.get_transactions()
     # return request_response.__str__()
     if request_is_successful:
-        return make_response(json.dumps([dict(ix) for ix in request_response]), 200)
+        return make_response(jsonify([dict(ix) for ix in request_response]), 200)
     else:
         return make_response("ERROR", 400)
 
@@ -213,7 +212,11 @@ def verify_signatures():
         request_is_successful, public_key_string = DatabaseRequests.get_public_key(sender)
         public_key_bytes = bytes(public_key_string, 'UTF-8')
         print(public_key_bytes)
-        HashTchai.verify_signature_with_public_key(sender, receiver, money, time_transaction, signature, public_key_bytes)
+        is_corrupted = HashTchai.verify_signature_with_public_key(sender, receiver, money, time_transaction, signature, public_key_bytes)
+        if is_corrupted:
+            print(f"TRANSACTION - id {transaction[id]} is corrupted")
+        else:
+            print("TRANSACTION - id {transaction[id]} is authentic")
     return make_response("yes")
 
 

@@ -46,7 +46,7 @@ python3 api_http.py
 ```
 
 <p> If it is the first time to run the app, we advise to run also the script "create_database.py". 
-It will create a fresh SQLite database locally with 2 transactions </p>
+It will create a fresh SQLite database locally with 2 transactions for v1, v2 and v3 </p>
 
 ```bash
 python3 create_database.py
@@ -57,14 +57,14 @@ python3 create_database.py
 The scripts to attack the system are contained in the folder "tests".
 For example, to attack the first version of the project, we run the program "test_script_attack_v1.py":
 ```bash
-python3 test_script_attack_v1.py
+python3 tests/test_script_attack_v1.py
 ```
 
 #### Details V1
 * Version 1 attack: the script "test_script_attack_v1.py" aims to change the data stored in the database. In fact, the program updates the first transaction by modifying the amount of the transaction with an SQLite "update" request. The new amount is set randomly. 
 
 ```bash
-python3 test_script_attack_v2.py
+python3 tests/test_script_attack_v2.py
 ```
 #### Details V2
 * Version 2 attack: the script "test_script_attack_v2.py" script 2 attacks the database and deletes an element in it, the goal is to see that a transaction has been deleted via the api, precisely the integrity check
@@ -76,18 +76,10 @@ python3 test_script_attack_v3.py
 * Version 3 attack: the script "test_script_attack_v3.py" script 3 adds a transaction to simulate a hacker, the goal is to detect this attack via the integrity test of the api
 
 ## API
-`@app.route('/')`
-def index():
-* This is the main page, this is where the user arrives first, the index displays the transactions, it is a GET.
-
-`@app.route('/add', methods=['GET'])`
-    return render_template('add.html')
+<p>All the API features start with `/api` </p>
 
 `@app.route('/api/add', methods=['POST'])`
 * Add a transaction to the database
-
-`@app.route('/wallet', methods=['GET'])`
-* Get all transaction for sort after and get wallets
 
 `@app.route('/api/transactions', methods=['GET'])`
 * Show transactions in chronological order
@@ -104,6 +96,20 @@ def index():
 `{
 "integrity": "OK"
 }`
+
+## WEB PAGES
+`@app.route('/')`
+* This is the main page, this is where the user arrives first, the index displays the transactions, it is a GET.
+
+`@app.route('/add', methods=['GET'])`
+* Page to add a transaction
+
+`@app.route('/wallet', methods=['GET'])`
+* Get all transaction for sort after and get wallets
+
+`@app.route('/api/verify_signatures', methods=['GET'])` <strong> NOT IMPLEMENTED CORRECTLY </strong>
+* Verify the signatures of all the transactions
+
 
 ## TODO
 #### If you have time :stuck_out_tongue_winking_eye:
