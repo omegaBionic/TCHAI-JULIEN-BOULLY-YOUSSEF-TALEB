@@ -68,22 +68,24 @@ def api_add():
 
     # Get the private key from JSON in string format, for example:
     # "private_key": "0xA12D5...."
-    private_key = 0x0
+    private_key = b''
+    private_key_is_generated = False
     if "private_key" in transaction:
         print("private_key exists in JSON")
-        hex_string = transaction["private_key"]
-        an_integer = int(hex_string, 16)
-        private_key = hex(an_integer)
+        private_key_string = transaction["private_key"]
+        private_key = bytes(private_key_string, 'UTF-8')
     else:
         print("private key does not exist in JSON")
 
     print("[api_add] POST: '{}' - '{}' - '{}' - '{}".format(sender, receiver, money, private_key))
 
     # Add the user to the table containing the users with their public keys
-    request_is_successful, request_response, public_key_created, private_key_created = DatabaseRequests.insert_user_to_table_public_key(sender)
+    request_is_successful, request_response, public_key_created, private_key_created \
+        = DatabaseRequests.insert_user_to_table_public_key(sender)
 
-    if private_key_created != 0x0:
+    if private_key_created != b'':
         private_key = private_key_created
+        private_key_is_generated = True
 
     # Get the current time and date as a string
     time_transaction = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -95,7 +97,11 @@ def api_add():
                                                                                             signature=signature)
     print("[api_add] POST: '{}' - '{}'".format(transaction_is_added, request_response))
     if transaction_is_added:
-        response_message_dict = {'message': 'Transaction added', 'code': 'SUCCESS'}
+        response_message_dict = {
+            'message': 'Transaction added', 'code': 'SUCCESS',
+            'private_key_is_generated': private_key_is_generated,
+            'private_key': private_key.decode("utf-8"),
+        }
         return make_response(jsonify(response_message_dict), 200)
     else:
         response_message_dict = {'message': 'TRANSACTION CANNOT BE ADDED', 'code': 'ERROR',

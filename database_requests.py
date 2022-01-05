@@ -74,27 +74,52 @@ class DatabaseRequests:
     @staticmethod
     def insert_user_to_table_public_key(user):
         user_is_added = False
-        private_key = 0x0
-        public_key = 0x0
+        private_key = b''
+        public_key = b''
         # Verify if user exists in the table first. The response is 0 or 1
-        sqlite_get_request = f"SELECT EXISTS(SELECT 1 FROM {TABLE_USERS_PUBLIC_KEY_NAME} WHERE user='{user}');"
-        request_is_successful, request_response = DatabaseRequests.execute_request_to_database(sqlite_get_request)
+        sqlite_get_request_is_user_exist = f"SELECT EXISTS(SELECT 1 FROM {TABLE_USERS_PUBLIC_KEY_NAME} WHERE user='{user}');"
+        print("---insert_user_to_table_public_key---")
+        print(f'sqlite_get_request for adding user to table of public keys : {sqlite_get_request_is_user_exist}')
+        request_is_successful, request_response = DatabaseRequests.execute_request_to_database(sqlite_get_request_is_user_exist)
+        print(f'request_is_successful: {request_is_successful}, request_response {request_response}')
+        is_user_exists = False
+        try:
+            sqlite_connection = sqlite3.connect(DATABASE_NAME)
+            # This enables column access by name: row['column_name']
+            sqlite_connection.row_factory = sqlite3.Row
+            cursor = sqlite_connection.cursor()
+            print("Connected to SQLite")
+
+            cursor.execute(sqlite_get_request_is_user_exist)
+            is_user_exists = True if cursor.fetchone()[0] == 1 else False
+            print(f'is_user_exists {is_user_exists}')
+            request_is_successful = True
+        except sqlite3.Error as error:
+            print("Failed to execute the request", error)
+            request_is_successful = False
+        finally:
+            if sqlite_connection:
+                sqlite_connection.close()
+                print("The SQLite connection is closed")
+
         if not request_is_successful:
             # return False, False, 0x0, 0x0
             return request_is_successful, user_is_added, public_key, private_key
-        # The response is 1 if the user already exists
-        if request_response == 1:
+        # is_user_exists == True if the user already exists
+        if is_user_exists:
             # return True, False, 0x0, 0x0
             return request_is_successful, user_is_added, public_key, private_key
-        # If the use doesn't exist
+        # If the user doesn't exist
         else:
             public_key_bytes, private_key_bytes = HashTchai.generate_rsa()
             public_key = public_key_bytes
             private_key = private_key_bytes
             sqlite_insert_request = f"INSERT INTO {TABLE_USERS_PUBLIC_KEY_NAME} (user, public_key) " \
-                                    f"VALUES ('{user}', '{public_key}'); "
+                                    f"VALUES ('{user}', '{public_key.decode('utf-8')}'); "
             request_is_successful, request_response = DatabaseRequests.execute_request_to_database(sqlite_insert_request)
             user_is_added = True
+            print(f'sqlite_insert_request: {sqlite_insert_request}')
+            print(f'user_is_added: true, request_is_successful: {request_is_successful}, request_response {request_response}')
             return request_is_successful, user_is_added, public_key, private_key
 
     @staticmethod

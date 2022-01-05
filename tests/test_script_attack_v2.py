@@ -7,7 +7,7 @@ if __name__ == "__main__":
     TABLE_TRANSACTIONS_NAME = database_requests.TABLE_TRANSACTIONS_NAME
 
     # Request to attack tchai V2 by deleting a transaction (the first one in this example)
-    sqlite_request_attack = f"DELETE FROM tblTransactions WHERE id = 1;"
+    sqlite_request_attack = f"DELETE FROM {TABLE_TRANSACTIONS_NAME} WHERE id = 1;"
     print(f"sqlite_request_attack: {sqlite_request_attack}")
     database_requests.DatabaseRequests.execute_request_to_database(sqlite_request_attack)
 
