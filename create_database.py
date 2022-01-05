@@ -9,6 +9,8 @@ config = Config.Config()
 database_name = config.config_data["database_config"]["database_name"]
 table_name = config.config_data["database_config"]["table_name"]
 
+table_users_public_key_name = config.config_data["database_config"]["table_users_public_key_name"]
+
 # Create database
 try:
     conn = sqlite3.connect(database_name)
@@ -16,7 +18,10 @@ try:
     c.execute('''
     CREATE TABLE ''' + table_name + '''( id INTEGER PRIMARY KEY AUTOINCREMENT, sender VARCHAR(30) NOT NULL, receiver 
     VARCHAR(30) NOT NULL, time_transaction VARCHAR(20) NOT NULL, money REAL NOT NULL, hash VARCHAR(64) NOT NULL);''')
+    conn.commit()
 
+    c.execute(f'CREATE TABLE {table_users_public_key_name} (id_user INTEGER PRIMARY KEY AUTOINCREMENT, '
+              f'user VARCHAR(30) NOT NULL, public_key VARCHAR(64) NOT NULL);')
     conn.commit()
 except Error as e:
     print(e)

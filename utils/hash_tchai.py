@@ -3,7 +3,7 @@ import database_requests
 
 class HashTchai:
     @staticmethod
-    def calculate_hash(sender, receiver, time_transaction, money, last_hash, is_first_iteration):
+    def calculate_hash(sender, receiver, time_transaction, money, last_hash, is_first_iteration=False):
         # Formalise datas
         money = format(float(money), ".6f")
 
