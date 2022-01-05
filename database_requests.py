@@ -9,6 +9,7 @@ config = Config.Config()
 print(config.config_data)
 DATABASE_NAME = config.config_data["database_config"]["database_name"]
 TABLE_TRANSACTIONS_NAME = config.config_data["database_config"]["table_name"]
+TABLE_USERS_PUBLIC_KEY_NAME = config.config_data["database_config"]["table_users_public_key_name"]
 
 
 class DatabaseRequests:
@@ -69,6 +70,31 @@ class DatabaseRequests:
     def get_transactions():
         sqlite_get_request = f'SELECT * FROM {TABLE_TRANSACTIONS_NAME} ORDER BY time_transaction ASC ;'
         return DatabaseRequests.execute_request_to_database(sqlite_get_request)
+
+    @staticmethod
+    def insert_user_to_table_public_key(user):
+        user_is_added = False
+        private_key = 0x0
+        public_key = 0x0
+        # Verify if user exists in the table first. The response is 0 or 1
+        sqlite_get_request = f"SELECT EXISTS(SELECT 1 FROM {TABLE_USERS_PUBLIC_KEY_NAME} WHERE user='{user}');"
+        request_is_successful, request_response = DatabaseRequests.execute_request_to_database(sqlite_get_request)
+        if not request_is_successful:
+            # return False, False, 0x0, 0x0
+            return request_is_successful, user_is_added, public_key, private_key
+        # The response is 1 if the user already exists
+        if request_response == 1:
+            # return True, False, 0x0, 0x0
+            return request_is_successful, user_is_added, public_key, private_key
+        # If the use doesn't exist
+        else:
+            public_key_bytes, private_key_bytes = HashTchai.generate_rsa()
+            public_key = public_key_bytes.hex()
+            private_key = private_key_bytes.hex()
+            sqlite_insert_request = f"INSERT INTO {TABLE_USERS_PUBLIC_KEY_NAME} (user, public_key) " \
+                                    f"VALUES ('{user}', '{public_key}'); "
+
+            return DatabaseRequests.execute_request_to_database(sqlite_insert_request), public_key, private_key
 
     @staticmethod
     def get_user_transactions(username):

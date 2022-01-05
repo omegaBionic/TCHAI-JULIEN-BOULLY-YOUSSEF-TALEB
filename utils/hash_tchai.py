@@ -1,5 +1,6 @@
 import hashlib
 import database_requests
+from Crypto.PublicKey import RSA
 
 class HashTchai:
     @staticmethod
@@ -30,3 +31,10 @@ class HashTchai:
         print("----------------")
 
         return transaction_hash
+
+    @staticmethod
+    def generate_rsa():
+        key = RSA.generate(2048)
+        public_key = key.export_key()
+        private_key = key.publickey().export_key()
+        return public_key, private_key
