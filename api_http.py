@@ -1,5 +1,6 @@
 # from flask import *
 import datetime
+import json
 
 from flask import Flask, render_template, request, make_response, jsonify
 
@@ -71,13 +72,14 @@ def api_add():
     private_key = b''
     private_key_is_generated = False
     if "private_key" in transaction:
-        print("private_key exists in JSON")
-        private_key_string = transaction["private_key"]
-        private_key = bytes(private_key_string, 'UTF-8')
+        print("private key exists in JSON")
+        #json.loads to unescape json
+        private_key_string = transaction["private_key"].replace("\\n", "\n")
+        private_key = bytes(private_key_string, 'utf-8')
     else:
         print("private key does not exist in JSON")
 
-    print("[api_add] POST: '{}' - '{}' - '{}' - '{}".format(sender, receiver, money, private_key))
+    print("[api_add] POST: '{}' - '{}' - '{}' - '{}'".format(sender, receiver, money, private_key))
 
     # Add the user to the table containing the users with their public keys
     request_is_successful, request_response, public_key_created, private_key_created \
@@ -89,7 +91,17 @@ def api_add():
 
     # Get the current time and date as a string
     time_transaction = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    signature = HashTchai.calculate_signature(sender, receiver, money, time_transaction, private_key)
+    print(f'private_key : {private_key.decode("utf-8")}')
+    signature = ""
+    try:
+        signature = HashTchai.calculate_signature(sender, receiver, money, time_transaction, private_key)
+    except ValueError:
+        print(f'INVALID PRIVATE KEY - private_key : {private_key}')
+        response_message_dict = {'message': 'TRANSACTION CANNOT BE ADDED', 'code': 'ERROR',
+                                 'details': 'Enter a valid private key',
+                                 'private_key_entered': private_key.decode("utf-8")}
+        return make_response((jsonify(response_message_dict), 400))
+
     transaction_is_added, request_response = DatabaseRequests.insert_transaction_into_table(sender=sender,
                                                                                             receiver=receiver,
                                                                                             time_transaction=time_transaction,
@@ -98,7 +110,8 @@ def api_add():
     print("[api_add] POST: '{}' - '{}'".format(transaction_is_added, request_response))
     if transaction_is_added:
         response_message_dict = {
-            'message': 'Transaction added', 'code': 'SUCCESS',
+            'message': 'Transaction added',
+            'code': 'SUCCESS',
             'private_key_is_generated': private_key_is_generated,
             'private_key': private_key.decode("utf-8"),
         }

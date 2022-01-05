@@ -35,18 +35,12 @@ th, td {
   margin-bottom: 12px;
 }
 
-h1{
+small {
+  color: white;
+  background-color: black;
+}
+
+h1, h2, h3, h4{
   color: white;
 }
 
-h2{
-  color: white;
-}
-
-h3{
-  color: white;
-}
-
-h4{
-  color: white;
-}
