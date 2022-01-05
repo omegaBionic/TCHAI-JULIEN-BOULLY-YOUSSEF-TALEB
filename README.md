@@ -97,6 +97,10 @@ python3 test_script_attack_v3.py
 "integrity": "OK"
 }`
 
+`@app.route('/api/verify_signatures', methods=['GET'])`
+<strong> NOT IMPLEMENTED CORRECTLY </strong>
+* Verify the signatures of all the transactions
+
 ## WEB PAGES
 `@app.route('/')`
 * This is the main page, this is where the user arrives first, the index displays the transactions, it is a GET.
@@ -106,10 +110,6 @@ python3 test_script_attack_v3.py
 
 `@app.route('/wallet', methods=['GET'])`
 * Get all transaction for sort after and get wallets
-
-`@app.route('/api/verify_signatures', methods=['GET'])` <strong> NOT IMPLEMENTED CORRECTLY </strong>
-* Verify the signatures of all the transactions
-
 
 ## TODO
 #### If you have time :stuck_out_tongue_winking_eye:
